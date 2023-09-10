@@ -22,19 +22,18 @@ from typing import List
 
 
 def main(argv: List[str]) -> None:
-
     # Prepare
     file_path = Path("./Makefile")
-    
+
     # Go
     desired_targets = argv[1:]
 
-    assert file_path.is_file(), f"File not found: \"{file_path}\""
+    assert file_path.is_file(), f'File not found: "{file_path}"'
 
     text = file_path.read_text()
     lines = text.splitlines(keepends=False)
     targets = find_targets(lines)
-    
+
     if len(desired_targets) == 0:
         print("")
         print("Usage: python makeshow.py <target_name>")
@@ -73,13 +72,12 @@ def print_target_definition(target_definition: str, desired_target: str) -> None
 
 
 def find_target_definition(lines: List[str], targets: List[str], desired_target: str) -> str:
-    
     if desired_target not in targets:
         return ""
-    
+
     definition = ""
     include = False
-    
+
     for line in lines:
         if line.startswith(desired_target + ":"):
             include = True
@@ -89,7 +87,7 @@ def find_target_definition(lines: List[str], targets: List[str], desired_target:
                 definition += line + "\n"
             else:
                 break
-    
+
     return definition.strip("\n")
 
 
