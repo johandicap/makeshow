@@ -18,7 +18,7 @@ Show definitions of Makefile targets in the terminal before running them.
 
 ### Examples
 
-##### Example 1: Show definitions of two targets
+#### Example 1: Show definitions of two targets
 
 ```bash
 ./makeshow.py isort_check isort_fix
@@ -38,7 +38,7 @@ isort_fix:
 ---
 ```
 
-##### Example 2: Response for an invalid target
+#### Example 2: Response for an invalid target
 
 ```bash
 ./makeshow.py unknown_target
