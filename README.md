@@ -30,11 +30,11 @@ Output:
 ---
 isort_check:
 	$(call header,"[make isort_check]")
-	isort --settings-path ./pyproject.toml --diff --color --check-only $(PYTHON_FILES_AND_FOLDERS)
+	@isort --settings-path ./pyproject.toml --diff --color --check-only $(PYTHON_FILES_AND_FOLDERS)
 ---
 isort_fix:
 	$(call header,"[make isort_fix]")
-	isort --settings-path ./pyproject.toml $(PYTHON_FILES_AND_FOLDERS)
+	@isort --settings-path ./pyproject.toml $(PYTHON_FILES_AND_FOLDERS)
 ---
 ```
 
