@@ -28,7 +28,10 @@ def main(argv: List[str]) -> None:
     # Go
     desired_targets = argv[1:]
 
-    assert file_path.is_file(), f'File not found: "{file_path}"'
+    if not file_path.is_file():
+        print(f'ERROR: Makefile not found in current folder:\n  "{file_path.resolve()}"', file=sys.stderr)
+        print("Please run in a folder that contains a Makefile :)", file=sys.stderr)
+        exit(17)
 
     text = file_path.read_text()
     lines = text.splitlines(keepends=False)
