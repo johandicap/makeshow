@@ -29,7 +29,7 @@ def main(argv: List[str]) -> None:
     desired_targets = argv[1:]
 
     if not file_path.is_file():
-        print(f'ERROR: Makefile not found in current folder:\n  "{file_path.resolve()}"', file=sys.stderr)
+        print(f'ERROR: No Makefile found in current folder:\n  "{file_path.resolve()}"', file=sys.stderr)
         print("Please run in a folder that contains a Makefile :)", file=sys.stderr)
         exit(17)
 
