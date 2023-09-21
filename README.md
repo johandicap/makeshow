@@ -27,15 +27,15 @@ Show definitions of Makefile targets in the terminal before running them.
 Output:
 
 ```
----
+
 isort_check:
 	$(call header,"[make isort_check]")
 	@isort --settings-path ./pyproject.toml --diff --color --check-only $(PYTHON_FILES_AND_FOLDERS)
----
+
 isort_fix:
 	$(call header,"[make isort_fix]")
 	@isort --settings-path ./pyproject.toml $(PYTHON_FILES_AND_FOLDERS)
----
+
 ```
 
 #### Example 2: Response for an invalid target
@@ -47,9 +47,9 @@ isort_fix:
 Output:
 
 ```
----
+
 Target 'unknown_target' not found in Makefile.
----
+
 ```
 
 
