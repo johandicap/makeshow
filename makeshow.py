@@ -104,17 +104,18 @@ def parse_args(arg_list: List[str]) -> MakeshowParameters:
 def banner_string() -> str:
     """
     ASCII banner created using https://manytools.org/hacker-tools/ascii-banner/
-    :return: ASCII banner as a string, ending with a newline.
+    :return: ASCII banner as a string, starting and ending with a newline.
     """
-    banner = (
-        "\n"
-        r"  __  __        _             _                 " "\n"
-        r" |  \/  | __ _ | |__ ___  ___| |_   ___ __ __ __" "\n"
-        r" | |\/| |/ _` || / // -_)(_-<| ' \ / _ \\ V  V /" "\n"
-        r" |_|  |_|\__,_||_\_\\___|/__/|_||_|\___/ \_/\_/ " "\n"
-    )
-    return banner
-    
+    banner_lines = [
+        r"",
+        r"  __  __        _             _                 ",
+        r" |  \/  | __ _ | |__ ___  ___| |_   ___ __ __ __",
+        r" | |\/| |/ _` || / // -_)(_-<| ' \ / _ \\ V  V /",
+        r" |_|  |_|\__,_||_\_\\___|/__/|_||_|\___/ \_/\_/ ",
+        r"",
+    ]
+    return "\n".join(banner_lines)
+
 
 def print_banner() -> None:
     print(banner_string())
