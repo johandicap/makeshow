@@ -13,8 +13,8 @@ Usage:
 
 """
 
-import dataclasses
 import argparse
+import dataclasses
 import sys
 from pathlib import Path
 from typing import List, Optional
@@ -80,10 +80,16 @@ def parse_args(arg_list: List[str]) -> MakeshowParameters:
         epilog="",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("--makefile_path", type=Path, default=Path("./Makefile"),
-                        help="Path to Makefile to show definitions from.")
-    parser.add_argument("desired_targets", type=str, default=[], nargs=argparse.REMAINDER,
-                        help="One or more Makefile target names to show definitions of.")
+    parser.add_argument(
+        "--makefile_path", type=Path, default=Path("./Makefile"), help="Path to Makefile to show definitions from."
+    )
+    parser.add_argument(
+        "desired_targets",
+        type=str,
+        default=[],
+        nargs=argparse.REMAINDER,
+        help="One or more Makefile target names to show definitions of.",
+    )
     args = parser.parse_args(arg_list)
     # Create parameters object
     params = MakeshowParameters(
@@ -115,10 +121,12 @@ def print_usage(all_targets: Optional[List[str]] = None) -> None:
         print("")
 
 
-def print_makefile_not_found_error(makefile_path: Path):
+def print_makefile_not_found_error(makefile_path: Path) -> None:
     print(f'ERROR: Makefile not found:\n  "{makefile_path.resolve()}"\n', file=sys.stderr)
-    print("Please run in a folder that contains a Makefile or use `--makefile_path` to specify the Makefile path.\n",
-          file=sys.stderr)
+    print(
+        "Please run in a folder that contains a Makefile or use `--makefile_path` to specify the Makefile path.\n",
+        file=sys.stderr,
+    )
 
 
 ########################################################################################################################
