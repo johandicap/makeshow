@@ -75,9 +75,8 @@ def run_makeshow(params: MakeshowParameters) -> None:
 def parse_args(arg_list: List[str]) -> MakeshowParameters:
     # Parse given argument list
     parser = argparse.ArgumentParser(
-        prog="Makeshow",
+        prog="makeshow",
         description="Show definitions of Makefile targets in the terminal.",
-        epilog="",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
@@ -102,15 +101,23 @@ def parse_args(arg_list: List[str]) -> MakeshowParameters:
 ########################################################################################################################
 
 
-def print_banner() -> None:
+def banner_string() -> str:
     """
     ASCII banner created using https://manytools.org/hacker-tools/ascii-banner/
+    :return: ASCII banner as a string, ending with a newline.
     """
-    print(r"  __  __        _             _                 ")
-    print(r" |  \/  | __ _ | |__ ___  ___| |_   ___ __ __ __")
-    print(r" | |\/| |/ _` || / // -_)(_-<| ' \ / _ \\ V  V /")
-    print(r" |_|  |_|\__,_||_\_\\___|/__/|_||_|\___/ \_/\_/ ")
-    print("")
+    banner = (
+        "\n"
+        r"  __  __        _             _                 " "\n"
+        r" |  \/  | __ _ | |__ ___  ___| |_   ___ __ __ __" "\n"
+        r" | |\/| |/ _` || / // -_)(_-<| ' \ / _ \\ V  V /" "\n"
+        r" |_|  |_|\__,_||_\_\\___|/__/|_||_|\___/ \_/\_/ " "\n"
+    )
+    return banner
+    
+
+def print_banner() -> None:
+    print(banner_string())
 
 
 def print_usage(all_targets: Optional[List[str]] = None) -> None:
