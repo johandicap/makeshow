@@ -13,43 +13,112 @@ Usage:
 
 """
 
+import dataclasses
+import argparse
 import sys
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 
 ########################################################################################################################
 
 
-def main(argv: List[str]) -> None:
-    # Prepare
-    file_path = Path("./Makefile")
+@dataclasses.dataclass
+class MakeshowParameters:
+    makefile_path: Path
+    desired_targets: List[str]
+
+
+########################################################################################################################
+
+
+def main(arg_list: List[str]) -> None:
+    params = parse_args(arg_list)
+    run_makeshow(params)
+
+
+########################################################################################################################
+
+
+def run_makeshow(params: MakeshowParameters) -> None:
+    # Extract parameters
+    makefile_path = params.makefile_path
+    desired_targets = params.desired_targets
 
     # Go
-    desired_targets = argv[1:]
-
-    if not file_path.is_file():
-        print(f'ERROR: No Makefile found in current folder:\n  "{file_path.resolve()}"', file=sys.stderr)
-        print("Please run in a folder that contains a Makefile :)", file=sys.stderr)
+    if not makefile_path.is_file():
+        print_banner()
+        print_makefile_not_found_error(makefile_path)
         exit(17)
 
-    text = file_path.read_text()
+    text = makefile_path.read_text()
     lines = text.splitlines(keepends=False)
     targets = find_targets(lines)
 
     if len(desired_targets) == 0:
-        print("")
-        print("Usage: python makeshow.py <target_name>")
-        print("")
-        print("Targets found in Makefile:")
-        print_list(targets)
-        print("")
+        # Print usage and a list of detected targets
+        print_banner()
+        print_usage(targets)
     else:
-        print("---")
+        sep = ""  # "---"
+        # Print the contents of the desired targets
+        print(sep)
         for desired_target in desired_targets:
             target_definition = find_target_definition(lines, targets, desired_target)
             print_target_definition(target_definition, desired_target)
-    return
+            print(sep)
+
+
+########################################################################################################################
+
+
+def parse_args(arg_list: List[str]) -> MakeshowParameters:
+    # Parse given argument list
+    parser = argparse.ArgumentParser(
+        prog="Makeshow",
+        description="Show definitions of Makefile targets in the terminal.",
+        epilog="",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument("--makefile_path", type=Path, default=Path("./Makefile"),
+                        help="Path to Makefile to show definitions from.")
+    parser.add_argument("desired_targets", type=str, default=[], nargs=argparse.REMAINDER,
+                        help="One or more Makefile target names to show definitions of.")
+    args = parser.parse_args(arg_list)
+    # Create parameters object
+    params = MakeshowParameters(
+        makefile_path=args.makefile_path,
+        desired_targets=args.desired_targets,
+    )
+    return params
+
+
+########################################################################################################################
+
+
+def print_banner() -> None:
+    """
+    ASCII banner created using https://manytools.org/hacker-tools/ascii-banner/
+    """
+    print(r"  __  __        _             _                 ")
+    print(r" |  \/  | __ _ | |__ ___  ___| |_   ___ __ __ __")
+    print(r" | |\/| |/ _` || / // -_)(_-<| ' \ / _ \\ V  V /")
+    print(r" |_|  |_|\__,_||_\_\\___|/__/|_||_|\___/ \_/\_/ ")
+
+
+def print_usage(all_targets: Optional[List[str]] = None) -> None:
+    print("Usage: python makeshow.py <target_name>")
+    print("")
+    if all_targets is not None:
+        print("Targets found in Makefile:")
+        print_list(all_targets)
+        print("")
+
+
+def print_makefile_not_found_error(makefile_path: Path):
+    print(f'ERROR: Makefile not found:\n  "{makefile_path.resolve()}"\n', file=sys.stderr)
+    print("Please run in a folder that contains a Makefile or use `--makefile_path` to specify the Makefile path.\n",
+          file=sys.stderr)
 
 
 ########################################################################################################################
@@ -68,7 +137,6 @@ def print_target_definition(target_definition: str, desired_target: str) -> None
         print(target_definition)
     else:
         print(f"Target '{desired_target}' not found in Makefile.")
-    print("---")
 
 
 ########################################################################################################################
@@ -113,4 +181,4 @@ def identify_target_in_line(line: str) -> str:
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main(sys.argv[1:])
