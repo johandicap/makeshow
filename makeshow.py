@@ -110,6 +110,7 @@ def print_banner() -> None:
     print(r" |  \/  | __ _ | |__ ___  ___| |_   ___ __ __ __")
     print(r" | |\/| |/ _` || / // -_)(_-<| ' \ / _ \\ V  V /")
     print(r" |_|  |_|\__,_||_\_\\___|/__/|_||_|\___/ \_/\_/ ")
+    print("")
 
 
 def print_usage(all_targets: Optional[List[str]] = None) -> None:
