@@ -114,7 +114,7 @@ def print_banner() -> None:
 
 
 def print_usage(all_targets: Optional[List[str]] = None) -> None:
-    print("Usage: python makeshow.py <target_name>")
+    print("Usage: python makeshow.py <target_name> [<target_name> ...]")
     print("")
     if all_targets is not None:
         print("Targets found in Makefile:")
