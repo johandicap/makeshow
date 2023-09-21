@@ -154,7 +154,7 @@ def find_target_definition(lines: List[str], targets: List[str], desired_target:
             include = True
             definition = line + "\n"
         elif include:
-            if line.startswith(" ") or line.startswith("\t"):
+            if line.startswith(" ") or line.startswith("\t") or line == "":
                 definition += line + "\n"
             else:
                 break
