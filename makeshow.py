@@ -11,6 +11,8 @@ Usage:
     ./makeshow.py target1 target2 ... targetN
         Will print the definitions of Makefile targets 1 to N.
 
+TODO(jmb): Update these examples and the README examples with --show_dependencies.
+
 """
 
 import argparse
@@ -188,7 +190,7 @@ def compute_dependency_chain_for_list_of_desired_targets(
     assert (
         dummy_target not in all_target_dependencies.keys()
     ), f"ERROR: Dummy target '{dummy_target}' found in Makefile."
-    extended_target_dependencies = all_target_dependencies.copy()
+    extended_target_dependencies = all_target_dependencies.copy()  # NB: Shallow copy, so the lists are reused.
     extended_target_dependencies[dummy_target] = desired_targets
     dependency_chain_with_dummy = compute_dependency_chain(dummy_target, extended_target_dependencies)
     assert dependency_chain_with_dummy[-1] == dummy_target
