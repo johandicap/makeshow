@@ -17,7 +17,7 @@ import argparse
 import dataclasses
 import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 
 ########################################################################################################################
@@ -27,6 +27,7 @@ from typing import List, Optional
 class MakeshowParameters:
     makefile_path: Path
     desired_targets: List[str]
+    show_dependencies: bool
 
 
 ########################################################################################################################
@@ -53,20 +54,33 @@ def run_makeshow(params: MakeshowParameters) -> None:
 
     text = makefile_path.read_text()
     lines = text.splitlines(keepends=False)
-    targets = find_targets(lines)
+    all_targets = find_targets(lines)
+    all_target_definitions = find_target_list_definitions(lines, all_targets)
+    # TODO(jmb): Test these functions on some test data (e.g. Makefile or two)
+    # TODO(jmb): Optimize the extraction of target list and target definitions later to reduce looping through 'lines'.
 
     if len(desired_targets) == 0:
         # Print usage and a list of detected targets
         print_banner()
-        print_usage(targets)
+        print_usage(all_targets)
+        return
+
+    if params.show_dependencies:
+        all_target_dependencies = find_target_list_dependencies(lines, all_targets)
+        dependency_chain = compute_dependency_chain_for_list_of_desired_targets(
+            desired_targets, all_target_dependencies
+        )
+        targets_to_show = dependency_chain
     else:
-        sep = ""  # "---"
-        # Print the contents of the desired targets
+        targets_to_show = desired_targets
+
+    # Print the contents of the desired targets
+    sep = ""  # "---"
+    print(sep)
+    for target in targets_to_show:
+        target_definition = all_target_definitions.get(target, f"(No definition found for target '{target}')")
+        print_target_definition(target_definition, target)
         print(sep)
-        for desired_target in desired_targets:
-            target_definition = find_target_definition(lines, targets, desired_target)
-            print_target_definition(target_definition, desired_target)
-            print(sep)
 
 
 ########################################################################################################################
@@ -83,6 +97,12 @@ def parse_args(arg_list: List[str]) -> MakeshowParameters:
         "--makefile_path", type=Path, default=Path("./Makefile"), help="Path to Makefile to show definitions from."
     )
     parser.add_argument(
+        "-d",
+        "--show_dependencies",
+        action="store_true",
+        help="Also show definitions of the targets that the given target(s) depend on.",
+    )
+    parser.add_argument(
         "desired_targets",
         type=str,
         default=[],
@@ -94,6 +114,7 @@ def parse_args(arg_list: List[str]) -> MakeshowParameters:
     params = MakeshowParameters(
         makefile_path=args.makefile_path,
         desired_targets=args.desired_targets,
+        show_dependencies=args.show_dependencies,
     )
     return params
 
@@ -159,15 +180,71 @@ def print_target_definition(target_definition: str, desired_target: str) -> None
 ########################################################################################################################
 
 
-def find_target_definition(lines: List[str], targets: List[str], desired_target: str) -> str:
-    if desired_target not in targets:
-        return ""
+def compute_dependency_chain_for_list_of_desired_targets(
+    desired_targets: List[str], all_target_dependencies: Dict[str, List[str]]
+) -> List[str]:
+    # Add dummy target that depends on all the desired targets
+    dummy_target = "____DUMMY____"
+    assert (
+        dummy_target not in all_target_dependencies.keys()
+    ), f"ERROR: Dummy target '{dummy_target}' found in Makefile."
+    extended_target_dependencies = all_target_dependencies.copy()
+    extended_target_dependencies[dummy_target] = desired_targets
+    dependency_chain_with_dummy = compute_dependency_chain(dummy_target, extended_target_dependencies)
+    assert dependency_chain_with_dummy[-1] == dummy_target
+    dependency_chain = dependency_chain_with_dummy[:-1]
+    assert dummy_target not in dependency_chain
+    return dependency_chain
 
+
+########################################################################################################################
+
+
+def compute_dependency_chain(x: str, dependencies: Dict[str, List[str]]) -> List[str]:
+    dependency_chain = []
+    for d in dependencies.get(x, []):
+        dependency_chain.extend([y for y in compute_dependency_chain(d, dependencies) if y not in dependency_chain])
+    if x not in dependency_chain:
+        dependency_chain.append(x)
+    return dependency_chain
+
+
+########################################################################################################################
+
+
+def find_target_list_dependencies(lines: List[str], targets: List[str]) -> Dict[str, List[str]]:
+    # TODO(jmb): Add tests of this function. And maybe optimize it to reduce looping through 'lines'.
+    target_dependencies: Dict[str, List[str]] = dict()
+    for target in targets:
+        target_dependencies[target] = find_single_target_dependencies(lines, target)
+    return target_dependencies
+
+
+def find_single_target_dependencies(lines: List[str], target: str) -> List[str]:
+    dependency_list: List[str] = []
+    for line in lines:
+        if line.startswith(target + ":"):
+            tail = line[len(target + ":") :]
+            dependency_list = [t for t in tail.split(" ") if t != ""]
+    return dependency_list
+
+
+########################################################################################################################
+
+
+def find_target_list_definitions(lines: List[str], targets: List[str]) -> Dict[str, str]:
+    target_definitions: Dict[str, str] = dict()
+    for target in targets:
+        target_definitions[target] = find_single_target_definition(lines, target)
+    return target_definitions
+
+
+def find_single_target_definition(lines: List[str], target: str) -> str:
     definition = ""
     include = False
 
     for line in lines:
-        if line.startswith(desired_target + ":"):
+        if line.startswith(target + ":"):
             include = True
             definition = line + "\n"
         elif include:
