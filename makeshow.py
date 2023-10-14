@@ -54,8 +54,7 @@ def run_makeshow(params: MakeshowParameters) -> None:
         print_makefile_not_found_error(makefile_path)
         exit(17)
 
-    text = makefile_path.read_text()
-    lines = text.splitlines(keepends=False)
+    lines = makefile_path.read_text().splitlines(keepends=False)
     all_targets = find_targets(lines)
     all_target_definitions = find_target_list_definitions(lines, all_targets)
     # TODO(jmb): Test these functions on some test data (e.g. Makefile or two)
@@ -202,13 +201,22 @@ def compute_dependency_chain_for_list_of_desired_targets(
 ########################################################################################################################
 
 
-def compute_dependency_chain(x: str, dependencies: Dict[str, List[str]]) -> List[str]:
-    dependency_chain = []
-    for d in dependencies.get(x, []):
-        dependency_chain.extend([y for y in compute_dependency_chain(d, dependencies) if y not in dependency_chain])
-    if x not in dependency_chain:
-        dependency_chain.append(x)
-    return dependency_chain
+def compute_dependency_chain(x: str, dependencies: Dict[str, List[str]], seen: Optional[List[str]] = None) -> List[str]:
+    chain = []
+    if seen is None:
+        seen = []
+    seen.append(x)
+    for dep in dependencies.get(x, []):
+        if dep in seen:
+            sys.stderr.write(f"makeshow: Circular dependency dropped: {x} <- {dep} (meaning '{x}' requires '{dep}')\n")
+            continue
+        dep_chain = compute_dependency_chain(dep, dependencies, seen)
+        for y in dep_chain:
+            if y not in chain:
+                chain.append(y)
+    if x not in chain:
+        chain.append(x)
+    return chain
 
 
 ########################################################################################################################
