@@ -10,8 +10,8 @@ Usage:
         Will print the definition of Makefile target "target1".
     ./makeshow.py target1 target2 ... targetN
         Will print the definitions of Makefile targets 1 to N.
-
-TODO(jmb): Update these examples and the README examples with --show_dependencies.
+    ./makeshow.py --show_dependencies target1
+        Will print the definition of Makefile target "target1" and its dependencies, e.g. targets 3, 5 and 17.
 
 """
 

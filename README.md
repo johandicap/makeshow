@@ -14,6 +14,9 @@ Show definitions of Makefile targets in the terminal before running them.
 
 ./makeshow.py target1 target2 ... targetN
 # Will print the definitions of Makefile targets 1 to N.
+
+./makeshow.py --show_dependencies target1
+# Will print the definition of Makefile target "target1" and its dependencies, e.g. targets 3, 5 and 17.
 ```
 
 ### Examples
