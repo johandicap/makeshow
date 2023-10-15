@@ -1,6 +1,6 @@
 """
 
-makeshow dependency utils
+Makeshow dependency resolver utils
 
 """
 

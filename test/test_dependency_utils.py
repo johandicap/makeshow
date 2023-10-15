@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
 """
 
-Makeshow dependency resolver unit tests
+Makeshow dependency resolver utils - Unit tests
 
 """
 

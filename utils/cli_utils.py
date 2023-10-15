@@ -1,6 +1,6 @@
 """
 
-makeshow command-line interface utils
+Makeshow command-line interface utils
 
 """
 

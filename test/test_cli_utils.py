@@ -1,26 +1,26 @@
-#!/usr/bin/env python3
 """
 
-test_cli_utils.py
+Makeshow command-line interface utils - Unit tests
 
 """
 
 from pathlib import Path
+from typing import List
 
-from utils import MakeshowParameters, parse_args
+from utils.cli_utils import MakeshowParameters, parse_args
 
 
 ########################################################################################################################
 
 
-def test_parse_args_minimal() -> None:
+def test_parse_args_empty() -> None:
     # Given
-    args_list = ["target1"]
+    args_list: List[str] = []
     # When
     params: MakeshowParameters = parse_args(args_list)
     # Then
     assert params.makefile_path.resolve() == Path("./Makefile").resolve()
-    assert params.desired_targets == ["target1"]
+    assert params.desired_targets == []
     assert not params.show_dependencies
 
 
