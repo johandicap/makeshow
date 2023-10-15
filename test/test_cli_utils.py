@@ -6,13 +6,14 @@ test_cli_utils.py
 """
 
 from pathlib import Path
-from utils import parse_args, MakeshowParameters
+
+from utils import MakeshowParameters, parse_args
 
 
 ########################################################################################################################
 
 
-def test_parse_args_minimal():
+def test_parse_args_minimal() -> None:
     # Given
     args_list = ["target1"]
     # When
@@ -26,7 +27,7 @@ def test_parse_args_minimal():
 ########################################################################################################################
 
 
-def test_parse_args_full():
+def test_parse_args_full() -> None:
     # Given
     args_list = ["--makefile_path", "./test/data/circular/Makefile", "--show_dependencies", "target1", "target2"]
     # When
@@ -38,4 +39,3 @@ def test_parse_args_full():
 
 
 ########################################################################################################################
-
