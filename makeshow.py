@@ -174,13 +174,12 @@ def load_lines_from_makefile_and_its_included_files(makefile_path: Path) -> List
 
 
 def extract_targets_and_target_definitions(lines: List[str]) -> Tuple[List[str], Dict[str, str]]:
-    # TODO(jmb): Maybe make this function more general and call it parse_makefile_contents().
     # TODO(jmb): Potentially parse properly, https://www.gnu.org/software/make/manual/html_node/Parsing-Makefiles.html
     all_targets = find_targets(lines)
     all_target_definitions = find_target_list_definitions(lines, all_targets)
     # TODO(jmb): Optimize the extraction of target list and target definitions later to reduce looping through 'lines'.
     # TODO(jmb): Test these functions on some test data (e.g. Makefile or two)
-    # TODO(jmb): Maybe only return all_target_definitions and compute all_targets as list(all_target_definitions.keys())
+    # TODO(jmb): Maybe only return all_target_definitions and obtain all_targets as list(all_target_definitions.keys())
     return all_targets, all_target_definitions
 
 
