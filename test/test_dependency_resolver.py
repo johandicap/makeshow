@@ -5,7 +5,7 @@ Makeshow dependency resolver unit tests
 
 """
 
-from makeshow import compute_dependency_chain
+from utils import compute_dependency_chain
 
 
 ########################################################################################################################

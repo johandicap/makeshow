@@ -5,6 +5,7 @@
 # Define Python files and folders to analyze
 PYTHON_FILES_AND_FOLDERS = \
 	makeshow.py \
+	utils \
 	test
 
 # Set Makefile shell to bash in order to print colored headers

@@ -11,7 +11,8 @@ from pathlib import Path
 from _pytest.capture import CaptureResult
 from pytest import CaptureFixture
 
-from makeshow import MakeshowParameters, run_makeshow
+from makeshow import run_makeshow
+from utils import MakeshowParameters
 
 
 ########################################################################################################################
