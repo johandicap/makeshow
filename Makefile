@@ -48,7 +48,7 @@ mypy:
 
 test:
 	$(call header,"[make test]")
-	@python3 -m pytest --verbose --color=auto .
+	@python3 -m pytest --verbose --color=auto --cov-config ./.coveragerc --cov .
 
 fix: isort_fix black_fix ruff_fix
 

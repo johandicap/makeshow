@@ -20,7 +20,6 @@ def test_compute_dependency_chain_simple() -> None:
     dependency_chain = compute_dependency_chain(desired_target, all_target_dependencies)
     # Then
     assert dependency_chain == expected_chain
-    print(17)
 
 
 ########################################################################################################################
