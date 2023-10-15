@@ -19,7 +19,7 @@ import argparse
 import dataclasses
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 
 ########################################################################################################################
@@ -48,24 +48,25 @@ def run_makeshow(params: MakeshowParameters) -> None:
     makefile_path = params.makefile_path
     desired_targets = params.desired_targets
 
-    # Go
+    # Show error message if given Makefile is not found
     if not makefile_path.is_file():
         print_banner()
         print_makefile_not_found_error(makefile_path)
         exit(17)
 
-    lines = makefile_path.read_text().splitlines(keepends=False)
-    all_targets = find_targets(lines)
-    all_target_definitions = find_target_list_definitions(lines, all_targets)
-    # TODO(jmb): Test these functions on some test data (e.g. Makefile or two)
-    # TODO(jmb): Optimize the extraction of target list and target definitions later to reduce looping through 'lines'.
+    # Load Makefile contents
+    lines = load_lines_from_makefile_and_its_included_files(makefile_path)
 
+    # Extract targets and their definitions
+    all_targets, all_target_definitions = extract_targets_and_target_definitions(lines)
+
+    # If no targets are given, print usage and a list of detected targets
     if len(desired_targets) == 0:
-        # Print usage and a list of detected targets
         print_banner()
         print_usage(all_targets)
         return
 
+    # Determine list of targets to show
     if params.show_dependencies:
         all_target_dependencies = find_target_list_dependencies(lines, all_targets)
         dependency_chain = compute_dependency_chain_for_list_of_desired_targets(
@@ -76,12 +77,7 @@ def run_makeshow(params: MakeshowParameters) -> None:
         targets_to_show = desired_targets
 
     # Print the contents of the desired targets
-    sep = ""  # "---"
-    print(sep)
-    for target in targets_to_show:
-        target_definition = all_target_definitions.get(target, f"(No definition found for target '{target}')")
-        print_target_definition(target_definition, target)
-        print(sep)
+    print_target_definitions(all_target_definitions, targets_to_show)
 
 
 ########################################################################################################################
@@ -143,6 +139,11 @@ def print_banner() -> None:
     print(banner_string())
 
 
+def print_list(my_list: List[str]) -> None:
+    print("- ", end="")
+    print("\n- ".join(my_list))
+
+
 def print_usage(all_targets: Optional[List[str]] = None) -> None:
     print("Usage: python makeshow.py <target_name> [<target_name> ...]")
     print("")
@@ -163,9 +164,24 @@ def print_makefile_not_found_error(makefile_path: Path) -> None:
 ########################################################################################################################
 
 
-def print_list(my_list: List[str]) -> None:
-    print("- ", end="")
-    print("\n- ".join(my_list))
+def load_lines_from_makefile_and_its_included_files(makefile_path: Path) -> List[str]:
+    lines = makefile_path.read_text().splitlines(keepends=False)
+    # TODO(jmb): Support includes!
+    return lines
+
+
+########################################################################################################################
+
+
+def extract_targets_and_target_definitions(lines: List[str]) -> Tuple[List[str], Dict[str, str]]:
+    # TODO(jmb): Maybe make this function more general and call it parse_makefile_contents().
+    # TODO(jmb): Potentially parse properly, https://www.gnu.org/software/make/manual/html_node/Parsing-Makefiles.html
+    all_targets = find_targets(lines)
+    all_target_definitions = find_target_list_definitions(lines, all_targets)
+    # TODO(jmb): Optimize the extraction of target list and target definitions later to reduce looping through 'lines'.
+    # TODO(jmb): Test these functions on some test data (e.g. Makefile or two)
+    # TODO(jmb): Maybe only return all_target_definitions and compute all_targets as list(all_target_definitions.keys())
+    return all_targets, all_target_definitions
 
 
 ########################################################################################################################
@@ -176,6 +192,15 @@ def print_target_definition(target_definition: str, desired_target: str) -> None
         print(target_definition)
     else:
         print(f"Target '{desired_target}' not found in Makefile.")
+
+
+def print_target_definitions(all_target_definitions: Dict[str, str], targets_to_show: List[str], sep: str = "") -> None:
+    print(sep)
+    for target in targets_to_show:
+        target_definition = all_target_definitions.get(target, f"(No definition found for target '{target}')")
+        print_target_definition(target_definition, target)
+        print(sep)
+    return
 
 
 ########################################################################################################################
