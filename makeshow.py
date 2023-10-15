@@ -24,15 +24,15 @@ import utils
 ########################################################################################################################
 
 
-def main(arg_list: List[str]) -> None:
+def main(arg_list: List[str]) -> int:
     params = utils.parse_args(arg_list)
-    run_makeshow(params)
+    return run_makeshow(params)
 
 
 ########################################################################################################################
 
 
-def run_makeshow(params: utils.MakeshowParameters) -> None:
+def run_makeshow(params: utils.MakeshowParameters) -> int:
     # Extract parameters
     makefile_path = params.makefile_path
     desired_targets = params.desired_targets
@@ -41,7 +41,7 @@ def run_makeshow(params: utils.MakeshowParameters) -> None:
     if not makefile_path.is_file():
         utils.print_banner()
         utils.print_makefile_not_found_error(makefile_path)
-        exit(17)
+        return 17
 
     # Load Makefile contents
     lines = utils.load_lines_from_makefile_and_its_included_files(makefile_path)
@@ -53,7 +53,7 @@ def run_makeshow(params: utils.MakeshowParameters) -> None:
     if len(desired_targets) == 0:
         utils.print_banner()
         utils.print_usage(all_targets)
-        return
+        return 0
 
     # Determine list of targets to show
     if params.show_dependencies:
@@ -67,6 +67,7 @@ def run_makeshow(params: utils.MakeshowParameters) -> None:
 
     # Print the contents of the desired targets
     utils.print_target_definitions(all_target_definitions, targets_to_show)
+    return 0
 
 
 ########################################################################################################################
