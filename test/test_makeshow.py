@@ -34,7 +34,9 @@ def test_makeshow_circular(capsys: CaptureFixture[str]) -> None:
         raise FileNotFoundError(f'Test data Makefile not found: "{makefile_path}"')
 
     # Prepare parameters to run makeshow on the test data file
-    params = MakeshowParameters(makefile_path=makefile_path, desired_targets=["a"], show_dependencies=True)
+    params = MakeshowParameters(
+        makefile_path=makefile_path, desired_targets=["a"], show_dependencies=True, show_makefile_instead=False
+    )
 
     # Run makeshow and capture its output
     run_makeshow(params)
@@ -70,7 +72,9 @@ def test_makeshow_file_not_found(capsys: CaptureFixture[str]) -> None:
     # When
     #
     # Prepare parameters to run makeshow on the test data file
-    params = MakeshowParameters(makefile_path=makefile_path, desired_targets=["a"], show_dependencies=False)
+    params = MakeshowParameters(
+        makefile_path=makefile_path, desired_targets=["a"], show_dependencies=False, show_makefile_instead=False
+    )
 
     # Run makeshow and capture its output
     return_code = run_makeshow(params)

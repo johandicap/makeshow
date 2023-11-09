@@ -46,6 +46,11 @@ def run_makeshow(params: utils.MakeshowParameters) -> int:
     # Load Makefile contents
     lines = utils.load_lines_from_makefile_and_its_included_files(makefile_path)
 
+    # Maybe show entire Makefile instead?
+    if params.show_makefile_instead:
+        utils.print_entire_makefile(lines)
+        return 0
+
     # Extract targets and their definitions
     all_targets, all_target_definitions = utils.extract_targets_and_target_definitions(lines)
 

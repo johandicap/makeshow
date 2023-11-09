@@ -49,9 +49,16 @@ def print_usage(all_targets: Optional[List[str]] = None) -> None:
 def print_makefile_not_found_error(makefile_path: Path) -> None:
     print(f'ERROR: Makefile not found:\n  "{makefile_path.resolve()}"\n', file=sys.stderr)
     print(
-        "Please run in a folder that contains a Makefile or use `--makefile_path` to specify the Makefile path.\n",
+        "Please run in a folder that contains a Makefile"
+        " or use `-m` / `--makefile_path` to specify the Makefile path.\n",
         file=sys.stderr,
     )
+
+
+def print_entire_makefile(lines: List[str]) -> None:
+    print("")
+    print("\n".join(lines).strip("\n"))
+    print("")
 
 
 ########################################################################################################################
