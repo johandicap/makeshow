@@ -1,0 +1,7 @@
+include extras/b_and_c.mk
+a:
+	echo "a"
+
+f: e
+	echo "f"
+include extras/d_and_e.mk

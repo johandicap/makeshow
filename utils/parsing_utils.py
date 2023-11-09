@@ -13,8 +13,51 @@ from typing import Dict, List, Tuple
 
 
 def load_lines_from_makefile_and_its_included_files(makefile_path: Path) -> List[str]:
-    lines = makefile_path.read_text().splitlines(keepends=False)
-    # TODO(jmb): Support includes!
+    # Load all lines of the original Makefile
+    original_lines = makefile_path.read_text().splitlines(keepends=False)
+
+    # Handle include statements
+    lines = []
+    last_include_line = -1
+    for i, line in enumerate(original_lines):
+        if line.startswith("include "):
+            # First add the lines since last include line
+            lines.extend(original_lines[(last_include_line + 1) : i])
+            # Then gather lines from each include argument and add them
+            incl_args = line[len("include ") :].split(" ")
+            for include_file_arg in incl_args:
+                lines_to_add = _load_lines_from_included_file(makefile_path, include_file_arg)
+                lines.append("")  # Add an empty line before the included lines
+                lines.extend(lines_to_add)
+                lines.append("")  # Add an empty line after the included lines
+            # Keep track of the last include line in order to add remaining original lines
+            last_include_line = i
+    # Add remaning original lines
+    lines.extend(original_lines[(last_include_line + 1) :])
+
+    # Append a potentially missing newline at the end
+    if len(lines) > 0 and lines[-1] != "":
+        lines.append("")
+
+    # Eliminate all instances of three or more consequitive newlines (to avoid excessive spacing)
+    text = "\n".join(lines)
+    while "\n\n\n" in text:
+        text = text.replace("\n\n\n", "\n\n")
+    lines = text.split("\n")
+    return lines
+
+
+########################################################################################################################
+
+
+def _load_lines_from_included_file(makefile_path: Path, include_file: str) -> List[str]:
+    # Obtain path to the include file
+    include_file_path = makefile_path.parent / include_file
+    # Verify that it is an existing file
+    if not include_file_path.is_file():
+        raise FileNotFoundError(f"Include file not found: '{include_file_path}'")
+    # Extract all lines in the file
+    lines = include_file_path.read_text().splitlines(keepends=False)
     return lines
 
 
