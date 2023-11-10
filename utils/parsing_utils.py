@@ -13,8 +13,8 @@ from typing import Dict, List, Tuple
 
 
 def load_lines_from_makefile_and_its_included_files(makefile_path: Path) -> List[str]:
-    # Load all lines of the original Makefile
-    original_lines = makefile_path.read_text().splitlines(keepends=False)
+    # Load Makefile
+    original_lines = read_lines_and_handle_backslashes(makefile_path, err_msg="Makefile not found:")
 
     # Handle include statements
     lines = []
@@ -26,7 +26,7 @@ def load_lines_from_makefile_and_its_included_files(makefile_path: Path) -> List
             # Then gather lines from each include argument and add them
             incl_args = line[len("include ") :].split(" ")
             for include_file_arg in incl_args:
-                lines_to_add = _load_lines_from_included_file(makefile_path, include_file_arg)
+                lines_to_add = load_lines_from_included_file(makefile_path, include_file_arg)
                 lines.append("")  # Add an empty line before the included lines
                 lines.extend(lines_to_add)
                 lines.append("")  # Add an empty line after the included lines
@@ -43,21 +43,32 @@ def load_lines_from_makefile_and_its_included_files(makefile_path: Path) -> List
     text = "\n".join(lines)
     while "\n\n\n" in text:
         text = text.replace("\n\n\n", "\n\n")
-    lines = text.split("\n")
+    lines = text.splitlines(keepends=False)
     return lines
 
 
-########################################################################################################################
-
-
-def _load_lines_from_included_file(makefile_path: Path, include_file: str) -> List[str]:
+def load_lines_from_included_file(makefile_path: Path, include_file: str) -> List[str]:
     # Obtain path to the include file
     include_file_path = makefile_path.parent / include_file
-    # Verify that it is an existing file
-    if not include_file_path.is_file():
-        raise FileNotFoundError(f"Include file not found: '{include_file_path}'")
-    # Extract all lines in the file
-    lines = include_file_path.read_text().splitlines(keepends=False)
+    lines = read_lines_and_handle_backslashes(include_file_path, err_msg="Include file not found:")
+    return lines
+
+
+def read_lines_and_handle_backslashes(file_path: Path, err_msg: str = "File not found:") -> List[str]:
+    # Verify that the given file exists
+    if not file_path.is_file():
+        raise FileNotFoundError(f"{err_msg} '{file_path}'")
+
+    # Load all lines of the file
+    text = file_path.read_text()
+
+    # Handle backslashes
+    text = text.replace("\\\n\t", "")
+    text = text.replace("\\\n", " ")
+    # NB: This is backslash handling is not complete, but it covers all the cases that I've encountered in practice.
+
+    # Split into lines and return them
+    lines = text.splitlines(keepends=False)
     return lines
 
 
@@ -87,10 +98,18 @@ def find_target_list_dependencies(lines: List[str], targets: List[str]) -> Dict[
 
 def find_single_target_dependencies(lines: List[str], target: str) -> List[str]:
     dependency_list: List[str] = []
+    tail = ""
+    found = False
     for line in lines:
         if line.startswith(target + ":"):
             tail = line[len(target + ":") :]
+            found = True
+        elif line.startswith(target + " :"):
+            tail = line[len(target + " :") :]
+            found = True
+        if found:
             dependency_list = [t for t in tail.split(" ") if t != ""]
+            break
     return dependency_list
 
 
@@ -111,6 +130,9 @@ def find_single_target_definition(lines: List[str], target: str) -> str:
         if line.startswith(target + ":"):
             include = True
             definition = line + "\n"
+        elif line.startswith(target + " :"):
+            include = True
+            definition = line + "\n"
         elif include:
             if line.startswith(" ") or line.startswith("\t") or line == "":
                 definition += line + "\n"
@@ -129,8 +151,16 @@ def find_targets(lines: List[str]) -> List[str]:
 
 
 def identify_target_in_line(line: str) -> str:
-    first = line.split(" ")[0]
-    target = first[:-1] if first.endswith(":") and not first.startswith(".") else ""
+    parts = line.split(" ")
+    first = parts[0]
+    if first.startswith("."):
+        target = ""
+    elif first.endswith(":"):
+        target = first[:-1]
+    elif len(parts) >= 2 and parts[1] == ":":
+        target = first
+    else:
+        target = ""
     return target
 
 
