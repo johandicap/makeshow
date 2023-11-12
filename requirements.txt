@@ -1,0 +1,4 @@
+# Makeshow requirements
+
+# Optional, but needed to show colored Makefile target definitions
+pygments==2.15.1

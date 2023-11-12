@@ -35,7 +35,12 @@ def test_makeshow_circular(capsys: CaptureFixture[str]) -> None:
 
     # Prepare parameters to run makeshow on the test data file
     params = MakeshowParameters(
-        makefile_path=makefile_path, desired_targets=["a"], show_dependencies=True, show_makefile_instead=False
+        makefile_path=makefile_path,
+        desired_targets=["a"],
+        show_dependencies=True,
+        show_makefile_instead=False,
+        disable_coloring=True,
+        color_scheme="one-dark",
     )
 
     # Run makeshow and capture its output
@@ -73,7 +78,12 @@ def test_makeshow_file_not_found(capsys: CaptureFixture[str]) -> None:
     #
     # Prepare parameters to run makeshow on the test data file
     params = MakeshowParameters(
-        makefile_path=makefile_path, desired_targets=["a"], show_dependencies=False, show_makefile_instead=False
+        makefile_path=makefile_path,
+        desired_targets=["a"],
+        show_dependencies=False,
+        show_makefile_instead=False,
+        disable_coloring=True,
+        color_scheme="one-dark",
     )
 
     # Run makeshow and capture its output

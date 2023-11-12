@@ -36,6 +36,11 @@ def run_makeshow(params: utils.MakeshowParameters) -> int:
     # Extract parameters
     makefile_path = params.makefile_path
     desired_targets = params.desired_targets
+    disable_coloring = params.disable_coloring
+    color_scheme = params.color_scheme
+
+    # Prepare coloring function if colors are available
+    coloring_func = utils.get_optional_coloring_function(color_scheme, disable_coloring)
 
     # Show error message if given Makefile is not found
     if not makefile_path.is_file():
@@ -48,7 +53,7 @@ def run_makeshow(params: utils.MakeshowParameters) -> int:
 
     # Maybe show entire Makefile instead?
     if params.show_makefile_instead:
-        utils.print_entire_makefile(lines)
+        utils.print_entire_makefile(lines, coloring_func=coloring_func)
         return 0
 
     # Extract targets and their definitions
@@ -57,7 +62,7 @@ def run_makeshow(params: utils.MakeshowParameters) -> int:
     # If no targets are given, print usage and a list of detected targets
     if len(desired_targets) == 0:
         utils.print_banner()
-        utils.print_usage(all_targets)
+        utils.print_usage(all_targets, coloring_func=coloring_func)
         return 0
 
     # Determine list of targets to show
@@ -71,7 +76,7 @@ def run_makeshow(params: utils.MakeshowParameters) -> int:
         targets_to_show = desired_targets
 
     # Print the contents of the desired targets
-    utils.print_target_definitions(all_target_definitions, targets_to_show)
+    utils.print_target_definitions(all_target_definitions, targets_to_show, coloring_func=coloring_func)
     return 0
 
 
