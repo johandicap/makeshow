@@ -42,7 +42,7 @@ def print_usage(all_targets: Optional[List[str]] = None, coloring_func: Optional
     print("")
     print("This will print the definition of the provided Makefile targets.")
     print("")
-    print("Highlights:")
+    print("Highlighted options:")
     print("* Add -d to also print the definitions of the targets that the provided targets depend on.")
     print("* Use -m to print the entire Makefile (including includes) instead of specific targets.")
     if coloring_func is None:
