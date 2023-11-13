@@ -32,12 +32,13 @@ def print_banner() -> None:
     print(banner_string())
 
 
-def print_list(my_list: List[str]) -> None:
-    print("- ", end="")
-    print("\n- ".join(my_list))
+def print_list(my_list: List[str], sep="*") -> None:
+    print(f"{sep} ", end="")
+    print(f"\n{sep} ".join(my_list))
 
 
-def print_usage(all_targets: Optional[List[str]] = None, coloring_func: Optional[Callable[[str], str]] = None) -> None:
+def print_usage(makefile_path: Optional[Path], all_targets: Optional[List[str]] = None,
+                coloring_func: Optional[Callable[[str], str]] = None) -> None:
     print("Usage: python makeshow.py <target_name> [<target_name> ...]")
     print("")
     print("This will print the definition of the provided Makefile targets.")
@@ -50,6 +51,10 @@ def print_usage(all_targets: Optional[List[str]] = None, coloring_func: Optional
     else:
         print("* Makefile targets will be shown in color now that 'pygments' in installed. Use -n to disable coloring.")
     print("")
+    if makefile_path is not None:
+        print("Makefile:")
+        print(f"  {makefile_path.absolute()}")
+        print("")
     if all_targets is not None:
         print("Targets found in Makefile:")
         print_list(all_targets)

@@ -62,7 +62,7 @@ def run_makeshow(params: utils.MakeshowParameters) -> int:
     # If no targets are given, print usage and a list of detected targets
     if len(desired_targets) == 0:
         utils.print_banner()
-        utils.print_usage(all_targets, coloring_func=coloring_func)
+        utils.print_usage(makefile_path, all_targets, coloring_func=coloring_func)
         return 0
 
     # Determine list of targets to show
