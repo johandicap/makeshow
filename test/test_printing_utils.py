@@ -25,7 +25,7 @@ def test_print_list(capsys: CaptureFixture[str]) -> None:
     assert stderr == ""
     # Verify that the list was printed to stdout
     output_lines = stdout.split("\n")
-    assert output_lines == ["- a", "- b", "- c", ""]
+    assert output_lines == ["* a", "* b", "* c", ""]
 
 
 ########################################################################################################################
