@@ -48,7 +48,7 @@ def print_usage(
     print("")
     print("Highlighted options:")
     print("* Add -d to also print the definitions of the targets that the provided targets depend on.")
-    print("* Use -m to print the entire Makefile (including includes) instead of specific targets.")
+    print("* Use -s to print the entire Makefile (including includes) instead of specific targets.")
     if coloring_func is None:
         print("* Install 'pygments' to show Makefile contents and targets in color.")
     else:
