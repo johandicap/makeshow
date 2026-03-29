@@ -1,11 +1,11 @@
 # Makeshow development requirements
 
-black==23.7.0
+black==25.11.0
 colorama==0.4.6
 coverage==7.2.2
 isort[colors]==5.12.0
 mypy==1.5.1
 pytest==7.4.0
 pytest-cov==4.1.0
-ruff==0.0.287
+ruff==0.15.8
 types-Pygments==2.16.0.1

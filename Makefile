@@ -36,7 +36,7 @@ black_fix:
 
 ruff_check:
 	$(call header,"[make ruff_check]")
-	@ruff check --config ./pyproject.toml --show-source $(PYTHON_FILES_AND_FOLDERS)
+	@ruff check --config ./pyproject.toml --show-files $(PYTHON_FILES_AND_FOLDERS)
 
 ruff_fix:
 	$(call header,"[make ruff_fix]")
